@@ -1,6 +1,5 @@
 const axios = require("axios");
-const constants = require("./constants.js");
-const { raw } = require("express");
+const constants = require("../constants.js");
 
 async function getAccessHistory(auth, yearAndMonth) {
     const [year, month] = yearAndMonth.split("-");
@@ -70,7 +69,7 @@ async function getAccessHistory(auth, yearAndMonth) {
 }
 
 async function getWorkHoursAverageOftheMonth(req, res) {
-    // return res.json({message: "Under Maintainance"});
+    return res.json({message: "Under Maintainance"});
     console.log("GET /month/workHoursAverage");
     console.log("headers= ", req.headers);
     console.log("query= ", req.query);
@@ -109,36 +108,40 @@ async function getWorkHoursAverageOftheMonth(req, res) {
         };
         const eachDay = Object.keys(groupedDaysOftheMonth)
         eachDay.forEach((day) => {
-            let prev = ''
-            const workHoursOfTheDay = groupedDaysOftheMonth[day].reduce((workHours, value, i, a) => {
+            // let prev = ''
+            // const workHoursOfTheDay = groupedDaysOftheMonth[day].reduce((workHours, value, i, a) => {
                 // if(!value) return workHours;
-                if (value < 0) { // less than 0 means entry
-                    if (i == 0) {
-                        return workHours;
-                    } else if (a[i + 1] < 0) {
-                        a.splice(i + 1, 1);
-                        // a[i+1] == 0;
-                        // return workHours + value;
-                    }
-                    prev = "entry"
-                    return workHours + value;
-                }
-                else if (value > 0) { // greater than means exit
-                    if (i == a.length - 1) {
-                        return workHours;
-                    } else if (a[i + 1] > 0) {
-                        value = 0;
-                    }
-                    prev == "exit";
-                    return workHours + value;
-                }
+                // if (value < 0) { // less than 0 means entry
+                //     if (i == 0) {
+                //         return workHours;
+                //     } else if (a[i + 1] < 0) {
+                //         a.splice(i + 1, 1);
+                //         // a[i+1] == 0;
+                //         // return workHours + value;
+                //     }
+                //     prev = "entry"
+                //     return workHours + value;
+                // }
+                // else if (value > 0) { // greater than means exit
+                //     if (i == a.length - 1) {
+                //         return workHours;
+                //     } else if (a[i + 1] > 0) {
+                //         value = 0;
+                //     }
+                //     prev == "exit";
+                //     return workHours + value;
+                // }
                 // if (prev == "entry") {
                 //     if (a?.[i+1] < 0) 
                 //     if (true) {
 
                 //     }
                 // }
-            }, 0);
+            // }, 0);
+            if (groupedDaysOftheMonth.length) {
+                return;
+            }
+            const workHoursOfTheDay = getWorkHoursPerDay(groupedDaysOftheMonth[day], 0);
             let rawHours = workHoursOfTheDay / 3600;
             workHoursPerDay[day] = {};
             workHoursPerDay[day].Hours = Math.floor(rawHours);
@@ -264,6 +267,16 @@ async function getWorkHoursToday(req, res) {
         return res.json({ message: error })
     }
 }
+
+// function getWorkHoursPerDay(day, index = 0, prev, workHours = 0) {
+//     if (index = 0);
+//     if(day[index] > 0) {
+//         return getWorkHoursPerDay(day, index + 1, "exit", workHours + day[index]);
+//     }
+//     if(day[index] < 0) {
+//         return getWorkHoursPerDay(day, index + 2, "entry", workHours + day[index]);
+//     }
+// }
 
 module.exports= {
     getWorkHoursAverageOftheMonth,
